@@ -33,7 +33,7 @@ HealthcheckClaimKit reads an answer (and the question, and earlier turns), finds
 ## Install
 
 ```swift
-.package(url: "https://github.com/rajatslakhina/healthcheck-claim-kit.git", from: "1.0.0")
+.package(url: "https://github.com/rajatslakhina/healthcheck-claim-kit.git", from: "1.0.1")
 ```
 
 and add `"HealthcheckClaimKit"` to your target. No dependencies. Swift 6, macOS 13 / iOS 16 and later, Linux.
@@ -73,23 +73,28 @@ print(scene.effective("web")?.summary ?? "unknown image")
 
 ![Demo output](Screenshots/demo-output.svg)
 
-## Quality gates (1.0.0)
+## Quality gates (1.0.1)
 
 ![Quality gates](Screenshots/quality-gates.svg)
 
 - `swift build`: 0 warnings, 0 errors. `swiftlint lint --strict` (0.63.2): 0 violations.
 - `swift test`: **52 tests in 13 suites** (Swift Testing), including 114 parity cases and 101 probe answers.
-- Coverage (`swift test --enable-code-coverage --no-parallel`, `llvm-cov report`): **100.00% of lines (2190) and functions (560) on all 25 library files**; regions 99.51%.
+- Coverage (`swift test --enable-code-coverage --no-parallel`, `llvm-cov report`): **100.00% of lines (2184) and functions (560) on all 25 library files**; regions 99.51%.
 - **Parity with Docker.** `Scripts/parity.py` runs 114 cases through `docker compose config`, `docker compose build --no-cache`, `docker compose create` and `docker inspect .Config.Healthcheck` under `env -i`, and writes `ParityFixture.swift`: test forms, 46 duration and retries spellings, variables from the shell, `.env` and `environment:`, the merge with an image `HEALTHCHECK`, and Dockerfile forms and stages. 19 cases are refused (11 by compose, 3 by the build, 5 by the engine). The kit gives the engine's exact `Healthcheck` for every case it reads; one case (a flow mapping holding a flow list) is declined by the YAML reader and asserted as unread.
 - **Runtime facts** were observed on running containers (cached `postgres:18`, `sleep infinity`, 1s intervals): the exec form with `||` goes unhealthy, `CMD-SHELL` with the same text is healthy, `restart: always` never restarts an unhealthy container, failures in `start_period` leave the streak at 0, a timed-out test logs exit `-1` and the container keeps running, `["CMD-SHELL", "exit", "1"]` is healthy (only `exit` is the script).
 - **Probes.** 61 correct answers stay quiet, 24 wrong ones are flagged by the intended rule or file check, 16 sentences from other domains (bash, regex, systemd, Kubernetes, ALB, nginx, the command kits' own sentences) give no claims. 20 of the correct ones came from a review that traced ordinary answers through the reader before tagging; all 20 were flagged by the first version.
+
+## Changes
+
+- **1.0.1**: `HealthScene.effective` / `HealthService.effective(image:)` return `nil` for a service whose image is unseen (an `image:` service, or a build whose base image is not shown), instead of compose's settings with the engine defaults filled in: an unseen `HEALTHCHECK` fills every field compose leaves unset. A check compose disables is still returned. Claims and file checks are unchanged.
+- **1.0.0**: first release.
 
 ## Limits
 
 - One compose file at a time; how several merge is [ComposeMergeClaimKit](https://github.com/rajatslakhina/compose-merge-claim-kit)'s.
 - Stated per-service values ("`db` is checked every 10s") are not read yet; only stated defaults.
 - `condition: service_healthy` without a healthcheck is left to [ComposeClaimKit](https://github.com/rajatslakhina/compose-claim-kit), so one mistake gets one note.
-- An `image:` service's own `HEALTHCHECK` is unseen, so its effective settings are unknown unless compose sets a full test.
+- An `image:` service's own `HEALTHCHECK` is unseen, so `effective` returns `nil` for it (its values would fill every field compose leaves unset), unless compose disables the check.
 - A list of statements joined by commas is read as one clause; a negation elsewhere in a clause leaves it unread rather than guessed.
 
 ## License

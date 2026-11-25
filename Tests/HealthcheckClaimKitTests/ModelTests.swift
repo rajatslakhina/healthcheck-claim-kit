@@ -44,8 +44,10 @@ struct ModelTests {
         service.healthcheck = Healthcheck(interval: 2)
         #expect(service.effective(image: .unknown) == nil)
         service.healthcheck = Healthcheck(test: ["CMD", "x"])
-        #expect(service.effective(image: .unknown) == Healthcheck(test: ["CMD", "x"]))
+        #expect(service.effective(image: .unknown) == nil)
         #expect(service.effective(image: .known(nil)) == Healthcheck(test: ["CMD", "x"]))
+        service.healthcheck = Healthcheck(test: ["NONE"])
+        #expect(service.effective(image: .unknown) == Healthcheck(test: ["NONE"]))
     }
 
     @Test func problemClasses() {

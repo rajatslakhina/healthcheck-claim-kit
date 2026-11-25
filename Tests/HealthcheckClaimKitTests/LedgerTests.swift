@@ -36,7 +36,8 @@ struct LedgerTests {
         #expect(checker.judge(claims[0]).severity == .wrong)
         let scene = checker.scene(for: file)
         #expect(scene.showsHealthcheck && scene.aboutDocker && scene.project?.services.count == 1)
-        #expect(scene.effective("db") == Healthcheck(test: ["CMD-SHELL", "pg_isready -U "]))
+        #expect(scene.project?.service("db")?.healthcheck == Healthcheck(test: ["CMD-SHELL", "pg_isready -U "]))
+        #expect(scene.effective("db") == nil)
         #expect(scene.effective("web") == nil)
         #expect(HealthClaimChecker().reader.claims(in: "Nothing here.", scene: HealthScene()).isEmpty)
     }

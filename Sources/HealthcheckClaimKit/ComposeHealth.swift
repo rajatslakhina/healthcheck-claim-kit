@@ -20,16 +20,11 @@ public struct HealthService: Sendable, Hashable {
         self.name = name
     }
 
-    /// The healthcheck the container gets: this one over the image's, when the image's is known.
+    /// The healthcheck the container gets: this one over the image's. With the image's unknown, `nil`, because an
+    /// unseen `HEALTHCHECK` fills every field compose leaves unset; only a check compose disables is settled.
     public func effective(image imageHealthcheck: ImageHealth) -> Healthcheck? {
-        let image: Healthcheck?
-        switch imageHealthcheck {
-        case .unknown:
-            // The image may carry its own HEALTHCHECK; only a full compose test settles what runs.
-            guard healthcheck?.test?.isEmpty == false else { return nil }
-            image = nil
-        case let .known(known):
-            image = known
+        guard case let .known(image) = imageHealthcheck else {
+            return healthcheck?.test?.first == "NONE" ? healthcheck : nil
         }
         guard let healthcheck else { return image }
         return healthcheck.merged(over: image)

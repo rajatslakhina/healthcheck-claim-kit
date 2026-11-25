@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="760" height="358" viewBox="0 0 760 358">
 <rect width="760" height="358" rx="12" fill="#ffffff" stroke="#d0d7de"/>
-<text x="24" y="38" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="bold" fill="#1f2328">HealthcheckClaimKit&#160;1.0.0&#160;&#8212;&#160;quality&#160;gates</text>
+<text x="24" y="38" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="bold" fill="#1f2328">HealthcheckClaimKit&#160;1.0.1&#160;&#8212;&#160;quality&#160;gates</text>
 <rect x="20" y="62" width="720" height="28" rx="6" fill="#f6f8fa"/>
 <circle cx="38" cy="76" r="7" fill="#1a7f37"/><text x="34" y="80" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
 <text x="56" y="81" font-family="Menlo, monospace" font-size="13" fill="#1f2328">swift&#160;build</text>
@@ -12,7 +12,7 @@
 <rect x="20" y="134" width="720" height="28" rx="6" fill="#f6f8fa"/>
 <circle cx="38" cy="148" r="7" fill="#1a7f37"/><text x="34" y="152" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
 <text x="56" y="153" font-family="Menlo, monospace" font-size="13" fill="#1f2328">line&#160;coverage</text>
-<text x="250" y="153" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">100.00%&#160;(2190&#160;lines,&#160;25&#160;library&#160;files)</text>
+<text x="250" y="153" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">100.00%&#160;(2184&#160;lines,&#160;25&#160;library&#160;files)</text>
 <rect x="20" y="170" width="720" height="28" rx="6" fill="#f6f8fa"/>
 <circle cx="38" cy="184" r="7" fill="#1a7f37"/><text x="34" y="188" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
 <text x="56" y="189" font-family="Menlo, monospace" font-size="13" fill="#1f2328">function&#160;coverage</text>
