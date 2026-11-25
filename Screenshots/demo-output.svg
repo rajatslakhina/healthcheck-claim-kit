@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="536" viewBox="0 0 980 536">
+<rect width="980" height="536" rx="10" fill="#0d1117"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f56"/><circle cx="40" cy="18" r="6" fill="#ffbd2e"/><circle cx="60" cy="18" r="6" fill="#27c93f"/>
+<text x="490" y="22" fill="#8b949e" font-family="Menlo, monospace" font-size="12" text-anchor="middle">swift&#160;run&#160;HealthcheckClaimDemo&#160;&#160;(excerpt&#160;of&#160;the&#160;real&#160;57-line&#160;output)</text>
+<text x="16" y="50" fill="#79c0ff" font-family="Menlo, monospace" font-size="12">==&#160;1.&#160;the&#160;exec&#160;form&#160;read&#160;as&#160;a&#160;shell</text>
+<text x="16" y="67" fill="#d2a8ff" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;verdict:&#160;wrong&#160;(wrong:&#160;1&#160;claim(s),&#160;1&#160;wrong,&#160;0&#160;caution)</text>
+<text x="16" y="84" fill="#ff7b72" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;WRONG&#160;&#160;&#160;Your&#160;test&#160;is&#160;fine:&#160;Docker&#160;runs&#160;the&#160;healthcheck&#160;through&#160;a&#160;shell,&#160;so&#160;the&#160;`||`&#160;works.</text>
+<text x="16" y="101" fill="#a5a5a5" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;-&#62;&#160;The&#160;exec&#160;form&#160;(`["CMD",&#160;...]`)&#160;runs&#160;the&#160;program&#160;directly,&#160;with&#160;no&#160;shell:&#160;`||`,&#160;`&#38;&#38;`&#160;and&#160;`$VAR`&#160;reach</text>
+<text x="16" y="118" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;it&#160;as&#160;plain&#160;arguments.&#160;Use&#160;`CMD-SHELL`&#160;or&#160;a&#160;string&#160;`test:`&#160;for&#160;shell&#160;syntax.</text>
+<text x="16" y="135" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12"></text>
+<text x="16" y="152" fill="#79c0ff" font-family="Menlo, monospace" font-size="12">==&#160;3.&#160;unhealthy&#160;is&#160;not&#160;restarted</text>
+<text x="16" y="169" fill="#d2a8ff" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;verdict:&#160;wrong&#160;(wrong:&#160;1&#160;claim(s),&#160;1&#160;wrong,&#160;0&#160;caution)</text>
+<text x="16" y="186" fill="#ff7b72" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;WRONG&#160;&#160;&#160;Add&#160;`restart:&#160;always`&#160;and&#160;Docker&#160;restarts&#160;the&#160;container&#160;when&#160;it&#160;becomes&#160;unhealthy.</text>
+<text x="16" y="203" fill="#a5a5a5" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;-&#62;&#160;Docker&#160;does&#160;not&#160;restart&#160;an&#160;unhealthy&#160;container,&#160;whatever&#160;the&#160;restart&#160;policy:&#160;it&#160;only&#160;marks&#160;it</text>
+<text x="16" y="220" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;`unhealthy`.&#160;A&#160;restart&#160;policy&#160;acts&#160;when&#160;the&#160;main&#160;process&#160;exits;&#160;Swarm&#160;and&#160;tools&#160;such&#160;as&#160;autoheal&#160;act&#160;on</text>
+<text x="16" y="237" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;health,&#160;plain&#160;Docker&#160;and&#160;compose&#160;do&#160;not.</text>
+<text x="16" y="254" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12"></text>
+<text x="16" y="271" fill="#79c0ff" font-family="Menlo, monospace" font-size="12">==&#160;5.&#160;merged&#160;with&#160;the&#160;image's&#160;HEALTHCHECK</text>
+<text x="16" y="288" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;web&#160;runs:&#160;test&#160;["CMD-SHELL",&#160;"/bin/check"],&#160;interval&#160;2s,&#160;timeout&#160;30s,&#160;retries&#160;6,&#160;start_period&#160;0s,&#160;start_interval&#160;5s</text>
+<text x="16" y="305" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12"></text>
+<text x="16" y="322" fill="#79c0ff" font-family="Menlo, monospace" font-size="12">==&#160;6.&#160;files&#160;compose&#160;or&#160;the&#160;engine&#160;refuse</text>
+<text x="16" y="339" fill="#d2a8ff" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;verdict:&#160;wrong&#160;(wrong:&#160;4&#160;claim(s),&#160;4&#160;wrong,&#160;0&#160;caution)</text>
+<text x="16" y="356" fill="#ff7b72" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;WRONG&#160;&#160;&#160;test:&#160;["curl",&#160;"-f",&#160;"http://localhost"]</text>
+<text x="16" y="373" fill="#a5a5a5" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;-&#62;&#160;`web`,&#160;line&#160;5:&#160;`test:`&#160;starts&#160;with&#160;`curl`;&#160;compose&#160;refuses&#160;a&#160;list&#160;that&#160;does&#160;not&#160;start&#160;with&#160;`CMD`,</text>
+<text x="16" y="390" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;`CMD-SHELL`&#160;or&#160;`NONE`.</text>
+<text x="16" y="407" fill="#ff7b72" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;WRONG&#160;&#160;&#160;interval:&#160;30</text>
+<text x="16" y="424" fill="#a5a5a5" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;-&#62;&#160;`web`,&#160;line&#160;6:&#160;`interval:&#160;30`&#160;has&#160;no&#160;unit;&#160;compose&#160;refuses&#160;it.&#160;Write&#160;a&#160;duration&#160;such&#160;as&#160;`30s`.</text>
+<text x="16" y="441" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12"></text>
+<text x="16" y="458" fill="#79c0ff" font-family="Menlo, monospace" font-size="12">==&#160;10b.&#160;the&#160;same&#160;mistake&#160;again</text>
+<text x="16" y="475" fill="#d2a8ff" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;verdict:&#160;wrong&#160;(wrong:&#160;1&#160;claim(s),&#160;1&#160;wrong,&#160;0&#160;caution)</text>
+<text x="16" y="492" fill="#ff7b72" font-family="Menlo, monospace" font-size="12">&#160;&#160;&#160;WRONG&#160;&#160;&#160;As&#160;I&#160;said,&#160;an&#160;unhealthy&#160;container&#160;is&#160;restarted&#160;by&#160;Docker.&#160;[repeated]</text>
+<text x="16" y="509" fill="#c9d1d9" font-family="Menlo, monospace" font-size="12"></text>
+</svg>

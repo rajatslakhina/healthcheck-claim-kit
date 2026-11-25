@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="358" viewBox="0 0 760 358">
+<rect width="760" height="358" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+<text x="24" y="38" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="bold" fill="#1f2328">HealthcheckClaimKit&#160;1.0.0&#160;&#8212;&#160;quality&#160;gates</text>
+<rect x="20" y="62" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="76" r="7" fill="#1a7f37"/><text x="34" y="80" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="81" font-family="Menlo, monospace" font-size="13" fill="#1f2328">swift&#160;build</text>
+<text x="250" y="81" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">0&#160;warnings,&#160;0&#160;errors</text>
+<rect x="20" y="98" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="112" r="7" fill="#1a7f37"/><text x="34" y="116" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="117" font-family="Menlo, monospace" font-size="13" fill="#1f2328">swift&#160;test</text>
+<text x="250" y="117" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">52&#160;tests&#160;in&#160;13&#160;suites,&#160;all&#160;passing</text>
+<rect x="20" y="134" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="148" r="7" fill="#1a7f37"/><text x="34" y="152" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="153" font-family="Menlo, monospace" font-size="13" fill="#1f2328">line&#160;coverage</text>
+<text x="250" y="153" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">100.00%&#160;(2190&#160;lines,&#160;25&#160;library&#160;files)</text>
+<rect x="20" y="170" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="184" r="7" fill="#1a7f37"/><text x="34" y="188" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="189" font-family="Menlo, monospace" font-size="13" fill="#1f2328">function&#160;coverage</text>
+<text x="250" y="189" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">100.00%&#160;(560&#160;functions)</text>
+<rect x="20" y="206" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="220" r="7" fill="#1a7f37"/><text x="34" y="224" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="225" font-family="Menlo, monospace" font-size="13" fill="#1f2328">swiftlint&#160;--strict</text>
+<text x="250" y="225" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">0&#160;violations&#160;(SwiftLint&#160;0.63.2)</text>
+<rect x="20" y="242" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="256" r="7" fill="#1a7f37"/><text x="34" y="260" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="261" font-family="Menlo, monospace" font-size="13" fill="#1f2328">Docker&#160;parity</text>
+<text x="250" y="261" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">114&#160;cases:&#160;engine&#160;Healthcheck&#160;matched;&#160;19&#160;refusals</text>
+<rect x="20" y="278" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="292" r="7" fill="#1a7f37"/><text x="34" y="296" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="297" font-family="Menlo, monospace" font-size="13" fill="#1f2328">probe&#160;corpus</text>
+<text x="250" y="297" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">61&#160;correct&#160;quiet,&#160;24&#160;wrong&#160;flagged,&#160;16&#160;other-domain&#160;silent</text>
+<rect x="20" y="314" width="720" height="28" rx="6" fill="#f6f8fa"/>
+<circle cx="38" cy="328" r="7" fill="#1a7f37"/><text x="34" y="332" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#ffffff">&#10003;</text>
+<text x="56" y="333" font-family="Menlo, monospace" font-size="13" fill="#1f2328">Linux&#160;(swift:6.0)</text>
+<text x="250" y="333" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#57606a">0&#160;diagnostics,&#160;52&#160;tests,&#160;demo&#160;md5&#160;identical</text>
+</svg>
