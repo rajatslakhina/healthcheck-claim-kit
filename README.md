@@ -77,12 +77,12 @@ print(scene.effective("web")?.summary ?? "unknown image")
 
 ![Quality gates](Screenshots/quality-gates.svg)
 
-- `swift build`: 0 warnings, 0 errors. `swiftlint lint --strict` (0.63.2): 0 violations.
+- `swift build --build-tests`: 0 warnings, 0 errors (macOS, Swift 6.4.2; Linux, `swift:6.0`, also 0, 52 tests, same demo output). `swiftlint lint --strict` (0.63.2): 0 violations.
 - `swift test`: **52 tests in 13 suites** (Swift Testing), including 114 parity cases and 101 probe answers.
 - Coverage (`swift test --enable-code-coverage --no-parallel`, `llvm-cov report`): **100.00% of lines (2184) and functions (560) on all 25 library files**; regions 99.51%.
 - **Parity with Docker.** `Scripts/parity.py` runs 114 cases through `docker compose config`, `docker compose build --no-cache`, `docker compose create` and `docker inspect .Config.Healthcheck` under `env -i`, and writes `ParityFixture.swift`: test forms, 46 duration and retries spellings, variables from the shell, `.env` and `environment:`, the merge with an image `HEALTHCHECK`, and Dockerfile forms and stages. 19 cases are refused (11 by compose, 3 by the build, 5 by the engine). The kit gives the engine's exact `Healthcheck` for every case it reads; one case (a flow mapping holding a flow list) is declined by the YAML reader and asserted as unread.
 - **Runtime facts** were observed on running containers (cached `postgres:18`, `sleep infinity`, 1s intervals): the exec form with `||` goes unhealthy, `CMD-SHELL` with the same text is healthy, `restart: always` never restarts an unhealthy container, failures in `start_period` leave the streak at 0, a timed-out test logs exit `-1` and the container keeps running, `["CMD-SHELL", "exit", "1"]` is healthy (only `exit` is the script).
-- **Probes.** 61 correct answers stay quiet, 24 wrong ones are flagged by the intended rule or file check, 16 sentences from other domains (bash, regex, systemd, Kubernetes, ALB, nginx, the command kits' own sentences) give no claims. 20 of the correct ones came from a review that traced ordinary answers through the reader before tagging; all 20 were flagged by the first version.
+- **Probes.** 61 correct answers stay quiet, 24 wrong ones are flagged by the intended rule or file check, 16 sentences from other domains (bash, regex, systemd, Kubernetes, ALB, nginx, the command kits' own sentences) give no claims. 20 of the correct ones came from a review that traced ordinary answers through the reader before tagging; 19 of those 20 were flagged by the first version (the 20th was a probe with invalid YAML, fixed before it was run, so it was never run against the first version).
 
 ## Changes
 
