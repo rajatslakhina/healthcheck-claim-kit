@@ -17,7 +17,7 @@ struct RuleTests {
         #expect(rules(docker + "the exec form of the healthcheck goes through a shell.") == ["execFormUsesShell=true"])
         #expect(rules(docker + "`CMD-SHELL` is run by a shell.") == ["stringFormUsesShell=true"])
         #expect(rules(docker + "an unhealthy container is restarted.") == ["unhealthyRestarts=true"])
-        #expect(rules(docker + "the check runs on your machine.") == ["runsInContainer=false"])
+        #expect(rules(docker + "the healthcheck runs on your machine.") == ["runsInContainer=false"])
         #expect(rules(docker + "failures in the healthcheck `start_period` are counted.")
             == ["startPeriodFailuresCount=true"])
         #expect(rules("Compose's `retries` comes from the image if unset.") == ["unsetFieldsDropImage=false"])

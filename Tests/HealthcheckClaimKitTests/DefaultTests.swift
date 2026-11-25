@@ -34,6 +34,6 @@ struct DefaultTests {
         #expect(Wording.defaultValue(.retries, 5) == "The default `retries` is 3, not 5.")
         #expect(DefaultReader.setting("--start-interval") == .startInterval)
         #expect(DefaultReader.setting("retries:") == .retries && DefaultReader.setting("x") == nil)
-        #expect(DefaultReader.count(["many"]) == nil && DefaultReader.duration(["x"]) == nil)
+        #expect(DefaultReader.counts(["many"]).isEmpty && DefaultReader.durations(["x"]).isEmpty)
     }
 }

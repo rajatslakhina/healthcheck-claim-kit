@@ -30,9 +30,9 @@ struct ReaderTests {
         #expect(web.image == "nginx" && !web.builds && web.hasHealthcheckKey)
         #expect(web.ports == [PortPair(published: 8080, target: 80), PortPair(published: 9000, target: 9001),
                               PortPair(published: 5433, target: 5432)])
-        #expect(web.environment == ["A", "B"])
+        #expect(web.environment == ["A": "1", "B": String?.none])
         let api = try #require(file.service("api"))
-        #expect(api.builds && !api.hasHealthcheckKey && api.environment == ["C"] && api.healthcheck == nil)
+        #expect(api.builds && !api.hasHealthcheckKey && api.environment == ["C": "x"] && api.healthcheck == nil)
         #expect(file.service("none") == nil)
         let fragment = try #require(project("    healthcheck:\n      test: curl -f x\n"))
         #expect(fragment.services.map(\.name) == [""])

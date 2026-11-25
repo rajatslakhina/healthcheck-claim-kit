@@ -11,8 +11,8 @@ public struct HealthService: Sendable, Hashable {
     public internal(set) var hasHealthcheckKey = false
     /// Problems in this service's healthcheck lines.
     public internal(set) var problems: [FileFinding] = []
-    /// Names set in `environment:`.
-    var environment: Set<String> = []
+    /// `environment:` as written: each name and its value (`nil` for `- NAME` or `NAME:` with none).
+    var environment: [String: String?] = [:]
     /// Published host ports and the container ports they reach.
     var ports: [PortPair] = []
 
@@ -108,10 +108,14 @@ struct HealthServiceReader {
         return service
     }
 
-    static func environmentNames(_ node: ComposeNode?) -> Set<String> {
-        if let entries = node?.entries { return Set(entries.map(\.key)) }
-        let items = node?.items?.compactMap(\.text) ?? []
-        return Set(items.map { String($0.prefix { $0 != "=" }).trimmed })
+    static func environmentNames(_ node: ComposeNode?) -> [String: String?] {
+        var values: [String: String?] = [:]
+        for entry in node?.entries ?? [] { values[entry.key] = entry.value.text }
+        for item in node?.items?.compactMap(\.text) ?? [] {
+            let name = String(item.prefix { $0 != "=" }).trimmed
+            values[name] = item.contains("=") ? String(item.drop { $0 != "=" }.dropFirst()) : String?.none
+        }
+        return values
     }
 
     /// `"8080:80"`, `"127.0.0.1:8080:80/tcp"`, or `{target: 80, published: 8080}`.

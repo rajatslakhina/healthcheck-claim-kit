@@ -306,6 +306,8 @@ let laterProbes: [Probe] = [
     Probe("shellClaimAboutQuestionTest", question: brokenQuestion,
           "Your test is fine: Docker runs the healthcheck through a shell, so the `||` works."),
     Probe("restartAfterInstruction", "Add `restart: always` and Docker restarts the container when it becomes unhealthy."),
+    Probe("noShellAboutShellTest", question: postgresQuestion,
+          "Your healthcheck runs without a shell, so `$$POSTGRES_USER` stays as it is."),
     Probe("timeoutLaterInSentence", "The healthcheck is fine, and a check that runs past `timeout` restarts the container.")
 ]
 
@@ -315,4 +317,56 @@ let laterCorrectProbes: [Probe] = [
     Probe("noShellAboutQuestionTest", question: brokenQuestion,
           "Docker runs that healthcheck without a shell, so the `||` never reaches one."),
     Probe("instructionThenTruth", "Add a `start_period` and Docker ignores failures until it ends.")
+]
+
+let composeQuestion = "In Docker Compose, how is a healthcheck test run?"
+
+/// Correct answers an advisor review traced to a finding by reading the reader (before 1.0.0 was tagged).
+let reviewProbes: [Probe] = [
+    Probe("insteadOfExec", question: brokenQuestion,
+          #"Instead of `["CMD", "curl", "-f", "http://localhost"]`, use the shell form."#),
+    Probe("passedDirectlyToShell", question: composeQuestion, "A string `test:` is passed directly to `/bin/sh -c`."),
+    Probe("connectsDirectly", question: postgresQuestion, "The check connects directly to the database."),
+    Probe("restartPolicyNoEffect", "The restart policy has no effect on an unhealthy container."),
+    Probe("untilYouRestart", "An unhealthy container keeps running until you restart it."),
+    Probe("instructionRunsEvery", "The `HEALTHCHECK` instruction runs every 30 seconds by default."),
+    Probe("firstIntervalDiscarded", "With two `HEALTHCHECK` lines, the `--interval` from the first is discarded."),
+    Probe("questionHeading", "Will Docker restart an unhealthy container? No."),
+    Probe("misconception", "It's a common misconception that Docker restarts unhealthy containers."),
+    Probe("needsShell", question: brokenQuestion, "The healthcheck needs to run through a shell for `||` to work."),
+    Probe("onceSucceeds", "Once a check succeeds during `start_period`, later failures count toward `retries`."),
+    Probe("setInsteadOfDefault", question: brokenQuestion, "Set `interval` to 10s instead of the default 30s."),
+    Probe("defaultLongerThan", question: brokenQuestion,
+          "The default `timeout` of 30s is longer than your `interval` of 10s."),
+    Probe("imageIntervalIgnored", "If you set `interval` in compose, the image's `--interval` is ignored."),
+    Probe("doesntRemoveCommand", "Setting only `interval` in compose doesn't remove the image's `HEALTHCHECK` command."),
+    Probe("bothVariableForms", question: postgresQuestion,
+          "`$POSTGRES_USER` becomes `$$POSTGRES_USER` so that it is resolved inside the container."),
+    Probe("changeToShell", question: brokenQuestion,
+          "Change it to `CMD-SHELL` and the healthcheck runs through a shell."),
+    Probe("passthroughEnvironment", #"""
+```yaml
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+```
+"""#),
+    Probe("passthroughList", #"""
+```yaml
+services:
+  db:
+    image: postgres:18
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_DB=${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+```
+"""#),
+    Probe("ciRunner", question: composeQuestion, "In CI, the check runs on the host runner before the tests start.")
 ]

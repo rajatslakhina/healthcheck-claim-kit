@@ -53,7 +53,13 @@ struct Scan {
     }
 
     func first(of phrases: [String], from: String.Index? = nil) -> String.Index? {
-        phrases.compactMap { position(of: $0, from: from) }.min()
+        match(phrases, from: from)?.position
+    }
+
+    /// The earliest phrase found, and where.
+    func match(_ phrases: [String], from: String.Index? = nil) -> (position: String.Index, phrase: String)? {
+        phrases.compactMap { phrase in position(of: phrase, from: from).map { ($0, phrase) } }
+            .min { $0.0 < $1.0 }
     }
 
     func contains(_ phrases: [String]) -> Bool {

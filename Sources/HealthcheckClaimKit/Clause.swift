@@ -45,7 +45,8 @@ struct Clause: Sendable, Hashable {
 
     static let hypotheticals = ["would", "might", "could", "may", "expect", "expected", "expects", "think", "thought",
                                 "seems", "looks like", "intended", "meant to", "want", "wanted", "suppose",
-                                "assume", "imagine", "you'd", "should", "hoped",
+                                "assume", "imagine", "you'd", "should", "hoped", "myth", "misconception",
+                                "mistakenly", "wrongly", "not true", "contrary to", "popular belief",
                                 "supposed to", "as if", "pretend"]
 
     /// The clause describes what someone expects, not what happens.

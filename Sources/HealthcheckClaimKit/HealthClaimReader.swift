@@ -14,7 +14,10 @@ public struct HealthClaimReader: Sendable {
         guard scene.aboutDocker else { return [] }
         var claims = scene.answerProblems.map { HealthClaim(kind: .file($0), sentence: $0.source) }
         for block in AnswerBlocks.split(text) where block.kind == .prose {
-            for sentence in Sentences.split(block.lines) where !Words.containsAny(sentence.folded, Self.elsewhere) {
+            // Headings and questions state nothing.
+            let lines = block.lines.filter { !$0.trimmed.hasPrefix("#") }
+            for sentence in Sentences.split(lines) where !Words.containsAny(sentence.folded, Self.elsewhere)
+                && !sentence.hasSuffix("?") {
                 claims += self.claims(sentence: sentence, scene: scene)
             }
         }
@@ -25,8 +28,10 @@ public struct HealthClaimReader: Sendable {
         let sentenceMarker = RuleCues.marker(Scan(Clause(sentence))) != nil
         let form = scene.testForms.count == 1 ? scene.testForms.first : nil
         var claims: [HealthClaim] = []
-        for raw in Sentences.clauses(sentence).flatMap(Self.afterInstruction) {
-            let scan = Scan(Clause(raw), showsHealthcheck: scene.showsHealthcheck || sentenceMarker, formInView: form)
+        for (raw, isTail) in Sentences.clauses(sentence).flatMap(Self.afterInstruction) {
+            // The half after "Change it to X and" describes the changed test, not the one in view.
+            let scan = Scan(Clause(raw), showsHealthcheck: scene.showsHealthcheck || sentenceMarker,
+                            formInView: isTail ? nil : form)
             // A clause about `command:` or `entrypoint:` belongs to the command kits unless it names a healthcheck.
             // A bare `CMD` means the healthcheck's form only when one is in view.
             let others = scene.showsHealthcheck ? Self.otherKeys.subtracting(["CMD"]) : Self.otherKeys
@@ -45,14 +50,15 @@ public struct HealthClaimReader: Sendable {
                            "your container"]
 
     /// "Add `restart: always` and Docker restarts it": the instruction, then the statement after it.
-    static func afterInstruction(_ clause: String) -> [String] {
-        guard Clause(clause).isInstruction else { return [clause] }
+    static func afterInstruction(_ clause: String) -> [(String, Bool)] {
+        guard Clause(clause).isInstruction else { return [(clause, false)] }
         for subject in subjects {
             if let range = clause.range(of: " and " + subject + " ", options: .caseInsensitive) {
-                return [String(clause[..<range.lowerBound]), String(clause[range.lowerBound...].dropFirst(5))]
+                return [(String(clause[..<range.lowerBound]), false),
+                        (String(clause[range.lowerBound...].dropFirst(5)), true)]
             }
         }
-        return [clause]
+        return [(clause, false)]
     }
 
     struct Statement: Hashable {
@@ -63,12 +69,16 @@ public struct HealthClaimReader: Sendable {
     /// The rules a clause states; two cues that contradict each other in one clause state nothing.
     func rules(_ scan: Scan) -> [Statement] {
         var found: [Statement] = []
-        for cue in RuleCues.all {
+        for cue in RuleCues.all where !scan.contains(cue.excludes) {
             guard let topic = cue.topic(scan), cue.allowsInstruction || !scan.clause.isInstruction,
-                  let phrase = scan.first(of: cue.phrases, from: cue.topicFirst ? topic : nil),
+                  let (phrase, words) = scan.match(cue.phrases, from: cue.topicFirst ? topic : nil),
                   !scan.hypothetical(before: phrase) else { continue }
-            let negated = scan.negated(before: phrase)
-            guard scan.negations == (negated ? 1 : 0) else { continue }
+            // A negation just before the phrase or inside it ("doesn't restart", "can't turn off") turns it round;
+            // any other negation in the clause leaves it unsaid.
+            let before = scan.negated(before: phrase)
+            let inside = Sentences.negationCount(words)
+            guard scan.negations == (before ? 1 : 0) + inside else { continue }
+            let negated = before != (inside % 2 == 1)
             let (rule, affirmed) = cue.rule.canonical(affirmed: cue.affirms != negated)
             let statement = Statement(rule: rule, affirmed: affirmed)
             if !found.contains(statement) { found.append(statement) }

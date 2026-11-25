@@ -1,7 +1,7 @@
 /// Where each rule's topic starts in a clause.
 extension RuleCues {
     static let markerWords = ["healthcheck", "health check", "healthchecks", "health checks", "health-check",
-                              "the check", "the test command"]
+                              "the test command"]
     static let markerCodes: Set<String> = ["test", "test:", "HEALTHCHECK", "healthcheck", "healthcheck:", "CMD-SHELL"]
     static let fields: Set<String> = Set(HealthSetting.allCases.flatMap { [$0.rawValue, $0.rawValue + ":", $0.flag] })
 
@@ -21,11 +21,18 @@ extension RuleCues {
     static func execForm(_ scan: Scan) -> String.Index? {
         if scan.codes.contains(where: { isExecList($0.code) && startsShell($0.code) }) { return nil }
         if let code = scan.code(where: isExecList) { return code }
-        // "The healthcheck runs through a shell" when every test in view is the exec form.
-        if scan.formInView == "CMD", stringForm(scan) == nil, let named = marker(scan) { return named }
+        // "Your healthcheck runs through a shell" when every test in view is the exec form.
+        if scan.formInView == "CMD", stringForm(scan) == nil, pointsAtShownTest(scan), let named = marker(scan) {
+            return named
+        }
         guard marker(scan) != nil || scan.codes.contains(where: { $0.code == "CMD" }) else { return nil }
         return scan.anyPosition(of: ["exec form", "exec-form", "the cmd form", "cmd form", "array form", "list form",
                                      "json form", "json array form"])
+    }
+
+    /// "Your test", "this healthcheck", "the test as written": the clause means the test the conversation shows.
+    static func pointsAtShownTest(_ scan: Scan) -> Bool {
+        scan.contains(["your", "yours", "this", "that", "as written", "the current"])
     }
 
     static func startsShell(_ code: String) -> Bool {
@@ -44,7 +51,8 @@ extension RuleCues {
             return false
         }
         if let code { return code }
-        if scan.formInView == "CMD-SHELL", scan.code(where: isExecList) == nil, let named = marker(scan) {
+        if scan.formInView == "CMD-SHELL", scan.code(where: isExecList) == nil, pointsAtShownTest(scan),
+           let named = marker(scan) {
             return named
         }
         guard marker(scan) != nil || scan.showsHealthcheck else { return nil }
@@ -92,13 +100,21 @@ extension RuleCues {
             .compactMap { $0 }.min()
     }
 
-    static func disabling(_ scan: Scan) -> String.Index? {
+    static func imageHealthcheck(_ scan: Scan) -> Bool {
         let image = scan.code { $0 == "HEALTHCHECK" } != nil
             || scan.anyPosition(of: ["image", "dockerfile", "base image", "inherited"]) != nil
-        guard image, marker(scan) != nil else { return nil }
+        return image && marker(scan) != nil
+    }
+
+    static func disabling(_ scan: Scan) -> String.Index? {
+        guard imageHealthcheck(scan) else { return nil }
         let codes: Set<String> = ["disable: true", "disable", "disable:", "[\"NONE\"]", "test: [\"NONE\"]", "NONE",
                                   "HEALTHCHECK NONE"]
-        return [scan.code { codes.contains($0) }, scan.anyPosition(of: ["compose"])].compactMap { $0 }.min()
+        return scan.code { codes.contains($0) }
+    }
+
+    static func composeCapability(_ scan: Scan) -> String.Index? {
+        imageHealthcheck(scan) ? scan.anyPosition(of: ["compose"]) : nil
     }
 
     static let expansions = ["expand", "expands", "expanded", "substitute", "substitutes", "substituted",
@@ -107,7 +123,8 @@ extension RuleCues {
                              "picks up", "read", "reads", "comes from", "come from", "taken from", "pulled from"]
 
     static func variable(_ scan: Scan, escaped: Bool) -> String.Index? {
-        guard let token = scan.clause.variableToken, Clause.variableName(token).escaped == escaped,
+        let forms = Set(scan.codes.map(\.code).filter(Clause.isVariable).map { Clause.variableName($0).escaped })
+        guard forms.count == 1, let token = scan.clause.variableToken, Clause.variableName(token).escaped == escaped,
               scan.contains(expansions), marker(scan) != nil || scan.showsHealthcheck else { return nil }
         return scan.code { $0 == token }
     }

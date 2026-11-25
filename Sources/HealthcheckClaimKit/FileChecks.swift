@@ -61,11 +61,17 @@ enum FileChecks {
         for word in words {
             let defaulted = Set(Interpolation.defaultedNames(in: word))
             for name in Interpolation.names(in: word) where !defaulted.contains(name) && !variables.knows(name)
-                && service.environment.contains(name) && !names.contains(name) {
+                && setsItself(service.environment[name]) && !names.contains(name) {
                 names.append(name)
             }
         }
         return names
+    }
+
+    /// The service sets the name to a value of its own: not `- NAME`, not empty, not `${NAME}` passed through.
+    static func setsItself(_ value: String??) -> Bool {
+        guard let written = value, let text = written else { return false }
+        return Interpolation.names(in: text).isEmpty
     }
 
     /// A `localhost:PORT` in the test where PORT is a published host port that maps to another container port.

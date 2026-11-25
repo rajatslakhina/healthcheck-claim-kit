@@ -23,17 +23,25 @@ enum DefaultReader {
     }
 
     static func values(_ scan: Scan) -> [Stated] {
-        guard scan.contains(cues),
+        guard !scan.clause.isInstruction, scan.contains(cues),
               scan.negations == negatedCues.filter({ scan.position(of: $0) != nil }).count else { return [] }
         let settings = scan.codes.compactMap { code in setting(code.code).map { ($0, code.range) } }
         var stated: [Stated] = []
+        var previousCued = false
         for (index, (setting, range)) in settings.enumerated() {
+            let start = index > 0 ? settings[index - 1].1.upperBound : scan.plain.startIndex
             let end = index + 1 < settings.count ? settings[index + 1].1.lowerBound : scan.plain.endIndex
-            let words = scan.plain[range.upperBound..<end].split { $0.isWhitespace || $0 == "," || $0 == ";" }
+            let segment = String(scan.plain[range.upperBound..<end])
+            let lead = String(scan.plain[start..<range.lowerBound])
+            // The cue sits by the setting ("the default `timeout`", "`interval` defaults to"), or the setting
+            // continues a cued one ("... defaults to 30s and `retries` to 3").
+            let cued = Words.containsAny(segment, cues) || Words.containsAny(lead, cues)
+                || (previousCued && segment.trimmed.hasPrefix("to "))
+            previousCued = cued
+            let words = segment.split { $0.isWhitespace || $0 == "," || $0 == ";" }
                 .map { $0.trimmingCharacters(in: .punctuationCharacters) }
-            if let value = setting.isDuration ? duration(words) : count(words) {
-                stated.append(Stated(setting: setting, value: value))
-            }
+            let values = setting.isDuration ? durations(words) : counts(words)
+            if cued, values.count == 1 { stated.append(Stated(setting: setting, value: values[0])) }
         }
         return stated
     }
@@ -45,29 +53,28 @@ enum DefaultReader {
         "hour": 3_600_000_000_000, "hours": 3_600_000_000_000
     ]
 
-    /// The first duration in the words: `30s`, `1m30s`, `30 seconds`, `0`.
-    static func duration(_ words: [String]) -> Int64? {
+    /// The durations in the words: `30s`, `1m30s`, `30 seconds`, `0`.
+    static func durations(_ words: [String]) -> [Int64] {
+        var found: [Int64] = []
         for (index, word) in words.enumerated() {
             if word.first?.isASCIIDigit == true, word.last?.isLetter == true, let value = try? GoDuration.parse(word) {
-                return value
+                found.append(value)
+                continue
             }
             guard let number = Double(word) else { continue }
             if index + 1 < words.count, let unit = unitWords[words[index + 1]] {
-                return Int64(number * Double(unit))
+                found.append(Int64(number * Double(unit)))
+            } else if number == 0 {
+                found.append(0)
             }
-            if number == 0 { return 0 }
         }
-        return nil
+        return found
     }
 
     static let numberWords = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
 
-    /// The first whole number in the words, as digits or a word.
-    static func count(_ words: [String]) -> Int64? {
-        for word in words {
-            if let number = Int64(word) { return number }
-            if let index = numberWords.firstIndex(of: word) { return Int64(index) }
-        }
-        return nil
+    /// The whole numbers in the words, as digits or words.
+    static func counts(_ words: [String]) -> [Int64] {
+        words.compactMap { word in Int64(word) ?? numberWords.firstIndex(of: word).map(Int64.init) }
     }
 }
