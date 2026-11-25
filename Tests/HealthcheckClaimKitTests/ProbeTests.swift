@@ -11,13 +11,13 @@ struct ProbeTests {
         report.findings.map { "\($0.severity) \($0.claim.kind) [\($0.claim.sentence)]" }.joined(separator: "\n")
     }
 
-    @Test(arguments: correctProbes)
+    @Test(arguments: correctProbes + laterCorrectProbes)
     func correctAnswersStayQuiet(_ probe: Probe) {
         let report = checker.check(probe.answer, context: probe.question)
         #expect(report.flagged.isEmpty, "\(probe.name):\n\(describe(report))")
     }
 
-    @Test(arguments: wrongProbes)
+    @Test(arguments: wrongProbes + laterProbes)
     func wrongAnswersAreFlagged(_ probe: Probe) {
         let report = checker.check(probe.answer, context: probe.question)
         #expect(!report.flagged.isEmpty, "\(probe.name):\n\(describe(report))")

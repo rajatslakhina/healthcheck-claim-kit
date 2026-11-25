@@ -7,12 +7,16 @@ struct Scan {
     let clause: Clause
     let plain: String
     let codes: [(code: String, range: Range<String.Index>)]
-    /// The conversation shows a healthcheck, so a clause about "the string form" can mean one.
+    /// The conversation shows a healthcheck or the sentence names one, so a clause about "the string form" or
+    /// "`timeout`" can mean one.
     let showsHealthcheck: Bool
+    /// The one form (`CMD` or `CMD-SHELL`) every healthcheck test in view is written in, if they share one.
+    let formInView: String?
 
-    init(_ clause: Clause, showsHealthcheck: Bool = false) {
+    init(_ clause: Clause, showsHealthcheck: Bool = false, formInView: String? = nil) {
         self.clause = clause
         self.showsHealthcheck = showsHealthcheck
+        self.formInView = formInView
         var plain = ""
         var codes: [(String, Range<String.Index>)] = []
         var offsets: [(code: String, span: Range<Int>)] = []

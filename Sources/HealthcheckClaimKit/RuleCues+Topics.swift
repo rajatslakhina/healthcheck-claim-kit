@@ -21,6 +21,8 @@ extension RuleCues {
     static func execForm(_ scan: Scan) -> String.Index? {
         if scan.codes.contains(where: { isExecList($0.code) && startsShell($0.code) }) { return nil }
         if let code = scan.code(where: isExecList) { return code }
+        // "The healthcheck runs through a shell" when every test in view is the exec form.
+        if scan.formInView == "CMD", stringForm(scan) == nil, let named = marker(scan) { return named }
         guard marker(scan) != nil || scan.codes.contains(where: { $0.code == "CMD" }) else { return nil }
         return scan.anyPosition(of: ["exec form", "exec-form", "the cmd form", "cmd form", "array form", "list form",
                                      "json form", "json array form"])
@@ -42,6 +44,9 @@ extension RuleCues {
             return false
         }
         if let code { return code }
+        if scan.formInView == "CMD-SHELL", scan.code(where: isExecList) == nil, let named = marker(scan) {
+            return named
+        }
         guard marker(scan) != nil || scan.showsHealthcheck else { return nil }
         return scan.anyPosition(of: ["a string", "string form", "shell form", "plain string", "the string",
                                      "test string", "healthcheck string"])

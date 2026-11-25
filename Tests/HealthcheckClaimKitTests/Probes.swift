@@ -299,3 +299,20 @@ let otherDomainProbes: [Probe] = [
     Probe("entrypointKeepsCmd", "Setting `entrypoint` drops the image's `CMD` while your `command` is still appended."),
     Probe("envFile", "Variables in `.env` are not passed to the container unless you use `env_file:`.")
 ]
+
+/// Shapes the first demo run missed: the test only in the question, an instruction joined to a statement, a list of
+/// statements in one sentence.
+let laterProbes: [Probe] = [
+    Probe("shellClaimAboutQuestionTest", question: brokenQuestion,
+          "Your test is fine: Docker runs the healthcheck through a shell, so the `||` works."),
+    Probe("restartAfterInstruction", "Add `restart: always` and Docker restarts the container when it becomes unhealthy."),
+    Probe("timeoutLaterInSentence", "The healthcheck is fine, and a check that runs past `timeout` restarts the container.")
+]
+
+let laterCorrectProbes: [Probe] = [
+    Probe("shellClaimAboutShellTest", question: postgresQuestion,
+          "The healthcheck runs through a shell, so `$$POSTGRES_USER` is expanded there."),
+    Probe("noShellAboutQuestionTest", question: brokenQuestion,
+          "Docker runs that healthcheck without a shell, so the `||` never reaches one."),
+    Probe("instructionThenTruth", "Add a `start_period` and Docker ignores failures until it ends.")
+]

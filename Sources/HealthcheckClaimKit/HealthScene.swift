@@ -10,6 +10,8 @@ public struct HealthScene: Sendable, Hashable {
     public internal(set) var showsHealthcheck = false
     /// The conversation is about Docker at all.
     public internal(set) var aboutDocker = false
+    /// The forms (`CMD`, `CMD-SHELL`) the healthcheck tests in view are written in.
+    var testForms: Set<String> = []
     /// Problems in the healthcheck lines of the answer's own last compose file and Dockerfile, without lines the
     /// question already showed (an answer quotes the broken file to explain it).
     var answerProblems: [FileFinding] = []
@@ -88,6 +90,12 @@ enum SceneReader {
         scene.showsHealthcheck = earlier?.showsHealthcheck == true
             || shownProjects.contains { $0.services.contains(where: \.hasHealthcheckKey) }
             || shownDockerfiles.contains(where: \.hasHealthcheck)
+        let tests = shownProjects.flatMap(\.services).compactMap { $0.healthcheck?.test?.first }
+            + shownDockerfiles.compactMap { dockerfile in
+                if case let .known(check) = dockerfile.image { return check?.test?.first }
+                return nil
+            }
+        scene.testForms = (earlier?.testForms ?? []).union(tests.filter { $0 == "CMD" || $0 == "CMD-SHELL" })
         let quoted = Set(contextBlocks.filter { $0.kind != .prose }.flatMap(\.block.lines).map(\.trimmed))
         let problems = (answerProjects.last?.problems ?? []) + (answerDockerfiles.last?.problems ?? [])
         scene.answerProblems = problems.filter { !quoted.contains($0.source) }

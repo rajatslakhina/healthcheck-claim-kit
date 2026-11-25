@@ -23,9 +23,10 @@ public struct HealthClaimReader: Sendable {
 
     func claims(sentence: String, scene: HealthScene) -> [HealthClaim] {
         let sentenceMarker = RuleCues.marker(Scan(Clause(sentence))) != nil
+        let form = scene.testForms.count == 1 ? scene.testForms.first : nil
         var claims: [HealthClaim] = []
-        for raw in Sentences.clauses(sentence) {
-            let scan = Scan(Clause(raw), showsHealthcheck: scene.showsHealthcheck)
+        for raw in Sentences.clauses(sentence).flatMap(Self.afterInstruction) {
+            let scan = Scan(Clause(raw), showsHealthcheck: scene.showsHealthcheck || sentenceMarker, formInView: form)
             // A clause about `command:` or `entrypoint:` belongs to the command kits unless it names a healthcheck.
             // A bare `CMD` means the healthcheck's form only when one is in view.
             let others = scene.showsHealthcheck ? Self.otherKeys.subtracting(["CMD"]) : Self.otherKeys
@@ -38,6 +39,20 @@ public struct HealthClaimReader: Sendable {
             }
         }
         return claims
+    }
+
+    static let subjects = ["docker", "compose", "the engine", "it", "the container", "the healthcheck", "the check",
+                           "your container"]
+
+    /// "Add `restart: always` and Docker restarts it": the instruction, then the statement after it.
+    static func afterInstruction(_ clause: String) -> [String] {
+        guard Clause(clause).isInstruction else { return [clause] }
+        for subject in subjects {
+            if let range = clause.range(of: " and " + subject + " ", options: .caseInsensitive) {
+                return [String(clause[..<range.lowerBound]), String(clause[range.lowerBound...].dropFirst(5))]
+            }
+        }
+        return [clause]
     }
 
     struct Statement: Hashable {
